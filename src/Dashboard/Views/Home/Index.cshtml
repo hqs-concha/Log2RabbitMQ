@@ -1,0 +1,151 @@
+﻿@{
+    Layout = null;
+}
+
+
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <script src="https://unpkg.com/vue@next"></script>
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/lib/theme-chalk/index.css">
+    <!-- import JavaScript -->
+    <script src="https://unpkg.com/element-plus/lib/index.full.js"></script>
+    <title>查看日志</title>
+    <style>
+        .container {
+            width: 80%;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+<div id="app" class="container">
+    <el-form :inline="true" :model="formInline">
+        <el-form-item label="应用名称">
+            <el-select v-model="formInline.AppName" placeholder="应用名称" v-for="(item, index) in appNames" :key="index">
+                <el-option :label="item" :value="item"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="日志等级">
+            <el-select v-model="formInline.Level" placeholder="日志等级">
+                <el-option label="" value="请选择"></el-option>
+                <el-option label="Trace" value="Trace"></el-option>
+                <el-option label="Debug" value="Debug"></el-option>
+                <el-option label="Information" value="Information"></el-option>
+                <el-option label="Warning" value="Warning"></el-option>
+                <el-option label="Error" value="Error"></el-option>
+                <el-option label="Critical" value="Critical"></el-option>
+                <el-option label="None" value="None"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="记录时间">
+            <el-date-picker v-model="formInline.LogTime" type="daterange" @@change="dateChange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @@click="getData">查询</el-button>
+        </el-form-item>
+    </el-form>
+    <el-table :data="tableData" border style="width: 100%">
+        <el-table-column type="index" width="50"></el-table-column>
+        <el-table-column prop="appName" label="应用名称" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="logLevel" label="日志等级"></el-table-column>
+        <el-table-column prop="logTime" label="记录时间"></el-table-column>
+        <el-table-column prop="categoryName" label="类别" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="message" label="消息内容" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="exception" label="异常信息" show-overflow-tooltip></el-table-column>
+        <el-table-column label="操作" width="80">
+            <template #default="scope">
+                <el-button @@click.native.prevent="view(scope.$index, tableData)" type="text" size="small"> 详情 </el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <div style="text-align: center; padding: 10px">
+        <el-pagination background layout="prev, pager, next" :total="pagination.total" :current-page="formInline.pageIndex" :page-size="10" @@current-change="pageChange" @@prev-click="pageChange" @@next-click="pageChange"></el-pagination>
+    </div>
+
+    <el-dialog title="异常信息" v-model="dialogVisible" width="30%" :before-close="handleClose">
+        <p>消息内容：{{ exception.message }}</p>
+        <p>异常信息：{{ exception.content }}</p>
+        <template #footer>
+            <span>
+                <el-button type="primary" @@click="dialogVisible = false">确 定</el-button>
+            </span>
+        </template>
+    </el-dialog>
+</div>
+
+<script>
+    const App = {
+        data() {
+            return {
+                tableData: [],
+                formInline: {
+                    AppName: "app.wechat.api",
+                    Level: "",
+                    LogTime: "",
+                    ValidFrom: "",
+                    ValidTo: "",
+                    pageIndex: 1
+                },
+                pagination: {
+                    total: 0
+                },
+                appNames: [],
+                dialogVisible: false,
+                exception: {}
+        }
+        },
+        mounted() {
+            this.getData();
+            this.getAppNames();
+        },
+        methods: {
+            getData() {
+                this.sendRequest('/home/list.dll', this.formInline, (json) => {
+                    this.tableData = json.item1;
+                    this.pagination.total = json.item2;
+                });
+            },
+            getAppNames() {
+                this.sendRequest('/home/appnames.dll', null, (json) => this.appNames = json);
+            },
+            dateChange() {
+                let arrayTime = this.formInline.LogTime;
+                this.formInline.ValidFrom = arrayTime[0];
+                this.formInline.ValidTo = arrayTime[1];
+            },
+            pageChange(val) {
+                this.formInline.pageIndex = val;
+                this.getData();
+            },
+            sendRequest(url, data, callback) {
+                fetch(url,
+                    {
+                        body: data && JSON.stringify(data),
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json', 
+                            'Accept': 'application/json'
+                        }
+                    }).then(res => res.json()).then(json => {
+                        callback && callback(json);
+                });
+            },
+            view(index, data) {
+                let column = data[index];
+                this.exception = {
+                    message : column.message,
+                    content: column.exception
+                };
+                this.dialogVisible = true;
+            }
+        }
+    };
+    const app = Vue.createApp(App);
+    app.use(ElementPlus);
+    app.mount("#app");
+</script>
+</body>
+</html>
