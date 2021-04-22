@@ -8,7 +8,7 @@ WORKDIR /src
 COPY ["src/Dashboard/Dashboard.csproj", "Dashboard/"]
 RUN dotnet restore "Dashboard/Dashboard.csproj"
 COPY . .
-WORKDIR "/src/Dashboard"
+WORKDIR "/src/src/Dashboard"
 RUN dotnet build "Dashboard.csproj" -c Release -o /app/build
 
 FROM build AS publish
@@ -17,4 +17,4 @@ RUN dotnet publish "Dashboard.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Dashboard.dll"
+ENTRYPOINT ["dotnet", "Dashboard.dll"]
