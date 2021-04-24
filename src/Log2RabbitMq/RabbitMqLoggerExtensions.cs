@@ -10,9 +10,9 @@ namespace Log2RabbitMq
             return AddLog2RabbitMq(build, new RabbitMqLoggerSettings(configuration));
         }
 
-        private static ILoggingBuilder AddLog2RabbitMq(this ILoggingBuilder builder, RabbitMqLoggerSettings kafkaLoggerSettings)
+        private static ILoggingBuilder AddLog2RabbitMq(this ILoggingBuilder builder, RabbitMqLoggerSettings loggerSettings)
         {
-            builder.AddProvider(new RabbitMqLoggerProvider(kafkaLoggerSettings));
+            builder.AddProvider(new RabbitMqLoggerProvider(loggerSettings));
             return builder;
         }
     }

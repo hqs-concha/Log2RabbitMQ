@@ -24,8 +24,8 @@
 <div id="app" class="container">
     <el-form :inline="true" :model="formInline">
         <el-form-item label="应用名称">
-            <el-select v-model="formInline.AppName" placeholder="应用名称" v-for="(item, index) in appNames" :key="index">
-                <el-option :label="item" :value="item"></el-option>
+            <el-select v-model="formInline.AppName" placeholder="应用名称">
+                <el-option v-for="(item, index) in appNames" :key="index" :label="item" :value="item"></el-option>
             </el-select>
         </el-form-item>
         <el-form-item label="日志等级">
@@ -47,7 +47,7 @@
             <el-button type="primary" @@click="getData">查询</el-button>
         </el-form-item>
     </el-form>
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table :data="tableData" border style="width: 100%" v-loading="loading">
         <el-table-column type="index" width="50"></el-table-column>
         <el-table-column prop="appName" label="应用名称" show-overflow-tooltip></el-table-column>
         <el-table-column prop="logLevel" label="日志等级"></el-table-column>
@@ -69,7 +69,7 @@
         <p>异常信息：{{ exception.content }}</p>
         <template #footer>
             <span>
-                <el-button type="primary" @@click="dialogVisible = false">确 定</el-button>
+                <el-button type="primary" @@click="handleClose">确 定</el-button>
             </span>
         </template>
     </el-dialog>
@@ -93,7 +93,8 @@
                 },
                 appNames: [],
                 dialogVisible: false,
-                exception: {}
+                exception: {},
+                loading: true
         }
         },
         mounted() {
@@ -102,9 +103,11 @@
         },
         methods: {
             getData() {
+                this.loading = true;
                 this.sendRequest('/home/list.dll', this.formInline, (json) => {
                     this.tableData = json.item1;
                     this.pagination.total = json.item2;
+                    this.loading = false;
                 });
             },
             getAppNames() {
@@ -139,6 +142,9 @@
                     content: column.exception
                 };
                 this.dialogVisible = true;
+            },
+            handleClose() {
+                this.dialogVisible = false;
             }
         }
     };
