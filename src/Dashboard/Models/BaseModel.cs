@@ -11,6 +11,7 @@ namespace Dashboard.Models
         public string Id { get; set; }
 
         [BsonElement(nameof(AddTime))]   //指明数据库中字段名为CreateDateTime
+        [BsonDateTimeOptions(Kind = DateTimeKind.Unspecified)]
         public DateTime AddTime { get; set; }
 
         [BsonElement(nameof(IsDelete))]
