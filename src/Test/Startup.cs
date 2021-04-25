@@ -1,3 +1,4 @@
+using Log.Extensions.Operation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -44,9 +45,8 @@ namespace Test
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
             app.UseAuthorization();
-
+            app.UseOperation();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

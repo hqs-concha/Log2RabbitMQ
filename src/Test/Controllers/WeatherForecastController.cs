@@ -3,11 +3,13 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Log.Extensions.Operation.Attributes;
 
 namespace Test.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [ControllerDesc("测试接口")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -23,6 +25,7 @@ namespace Test.Controllers
         }
 
         [HttpGet]
+        [ActionDesc("获取xxx")]
         public IEnumerable<WeatherForecast> Get()
         {
             _logger.LogInformation("123123131231");

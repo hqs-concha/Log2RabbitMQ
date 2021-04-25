@@ -6,11 +6,11 @@ namespace Log.Extensions.Operation.Attributes
     /// Action 方法名称
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class ActionNameAttribute : Attribute
+    public class ActionDescAttribute : Attribute
     {
         public string Name { get; set; }
 
-        public ActionNameAttribute(string name)
+        public ActionDescAttribute(string name)
         {
             Name = name;
         }

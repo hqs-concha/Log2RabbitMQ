@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Log.Extensions.Operation\Log.Extensions.Operation.csproj" />
     <ProjectReference Include="..\Log2RabbitMq\Log2RabbitMq.csproj" />
     <ProjectReference Include="..\Log2RabbitMq\Log2RabbitMq.csproj" />
   </ItemGroup>
